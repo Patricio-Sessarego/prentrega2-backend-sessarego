@@ -1,0 +1,26 @@
+{{#if isProducts}}
+    {{!-- NO PRODUCTS --}}
+    <main class="containerPadre" id="containerPadre">
+        <div class="noProducts">
+            <i class="bi bi-box noProductsIcon"></i>
+            <div class="noProductsText">No hay productos registrados</div> 
+        </div>
+    </main>
+
+{{else}}
+    {{!-- PRODUCTS --}}
+    <div class="productos" id="productos">
+    {{#each products}}
+        <div class="producto">
+            <p class="categoriaProducto"> {{ this.category }} <i class="bi bi-tags-fill"></i> </p>
+            <p class="nombreProducto"> {{ this.title }} <i class="bi bi-person-fill"></i> </p>
+            <p class="codigoProducto"> {{ this.code }} <i class="bi bi-upc-scan"></i> </p>
+            <p class="precioProducto"> {{ this.price }} <i class="bi bi-currency-dollar"></i> </p>
+            <p class="stockProducto"> {{ this.stock }} <i class="bi bi-box-seam-fill"></i> </p>
+        </div>
+    {{/each}}
+    </div>
+{{/if}}
+
+{{!-- SCRIPT --}}
+<script src="../static/assets/js/home.js"></script>
