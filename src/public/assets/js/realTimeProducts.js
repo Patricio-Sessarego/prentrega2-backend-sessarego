@@ -32,6 +32,7 @@ socket.on('initialProducts' , products => { //CARGAMOS LOS PRODUCTOS ACTUALES
                 <p class="codigoProducto"> ${product.code.toUpperCase()} <i class="bi bi-upc-scan"></i> </p>
                 <p class="precioProducto"> ${ponerComas(product.price)} <i class="bi bi-currency-dollar"></i> </p>
                 <p class="stockProducto"> ${ponerComas(product.stock)} <i class="bi bi-box-seam-fill"></i> </p>
+                <button class="btnComprar" onclick="eventDeleteProduct('${product.id}')"> Borrar </button>
             `
             divProducts.append(div) //APPEND DEL DIV
         })
@@ -126,6 +127,7 @@ socket.on('productAdded' , (product) => { //ACTUALIZAMOS EN TIEMPO REAL CON EL N
         <p class="codigoProducto"> ${product.code.toUpperCase()} <i class="bi bi-upc-scan"></i> </p>
         <p class="precioProducto"> ${ponerComas(product.price)} <i class="bi bi-currency-dollar"></i> </p>
         <p class="stockProducto"> ${ponerComas(product.stock)} <i class="bi bi-box-seam-fill"></i> </p>
+        <button class="btnComprar" onclick="eventDeleteProduct('${product.id}')"> Borrar </button>
     `
 
     divProducts.append(div) //APPEND DEL DIV
@@ -150,12 +152,76 @@ socket.on('dupCode' , (data) => { //MOSTRAMOS UNA ALERTA DE QUE EL CODIGO TIENE 
     })
 })
 
+socket.on('productDeleted' , (products) => { //ELIMINAMOS EL PRODUCTO
+    let noProducts = document.getElementById('noProducts')
+    let divProducts = document.getElementById('productos')
+
+    if(products.length == 0){ //VA A QUEDAR VACIO
+        noProducts.classList.remove('d-none')
+        divProducts.classList.remove('productos')
+    }
+
+    divProducts.innerHTML = ''
+    products.forEach((product) => {
+        const div = document.createElement("div") //DIV QUE VA A CONTENER EL PRODUCTO
+        div.classList.add("producto") //LE AGREGAMOS LA CLASE PRODUCTO
+
+        //CARGAMOS EL DIV
+        div.innerHTML = `
+            <p class="categoriaProducto"> ${product.category.toUpperCase()} <i class="bi bi-tags-fill"></i> </p>
+            <p class="nombreProducto"> ${product.title.toUpperCase()} <i class="bi bi-person-fill"></i> </p>
+            <p class="codigoProducto"> ${product.code.toUpperCase()} <i class="bi bi-upc-scan"></i> </p>
+            <p class="precioProducto"> ${ponerComas(product.price)} <i class="bi bi-currency-dollar"></i> </p>
+            <p class="stockProducto"> ${ponerComas(product.stock)} <i class="bi bi-box-seam-fill"></i> </p>
+            <button class="btnComprar" onclick="eventDeleteProduct('${product.id}')"> Borrar </button>
+        `
+        divProducts.append(div) //APPEND DEL DIV
+    })
+})
+
 //FUNCIONES
 function ponerComas(value){
     let float = parseFloat(value)
     let parseado = float.toLocaleString('en-US', { maximumFractionDigits: 0 });
 
     return parseado
+}
+
+function eventDeleteProduct(productId){
+    Swal.fire({
+        text: 'DESEA ELIMINAR EL PRODUCTO?',
+        confirmButtonText: 'ELIMINAR',
+        cancelButtonText: "CANCELAR",
+        cancelButtonColor: '#3085d6',
+        confirmButtonColor: '#d33',
+        showCancelButton: true,
+        background: '#fff3f3',
+        iconColor: '#f27474',
+        title: '¡ATENCION!',
+        padding: '20px',
+        icon: 'error',
+    }).then((result) => {
+        if(result.isConfirmed){
+            Swal.fire({
+                text: 'EL PRODUCTO SE ELIMINO CORRECTAMENTE.',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'ACEPTAR',
+                background: '#e3f2fd',
+                iconColor: '#4caf50',
+                title: '¡EXITO!',
+                padding: '20px',
+                icon: 'success',
+                
+                customClass: {
+                    title: 'swalTitleSuccess',
+                    content: 'swalContentSuccess',
+                    confirmButton: 'swalConfirmButtonSuccess'
+                }
+            })
+
+            socket.emit('deletedProduct' , productId)
+        }
+    });
 }
 
 //EVENTOS PARA PREVENIR EL USO DEL ESPACIO

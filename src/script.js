@@ -60,4 +60,12 @@ io.on('connection' , async (socket) => {
             socket.emit('dupCode' , { message: 'EL CODIGO DE LOS PRODUCTOS TIENE QUE SER UNICO'}) //ALERTA DE QUE EL CODIGO YA EXISTE
         }
     })
+
+    socket.on('deletedProduct' , async (productId) => {
+        const products = await productService.getProducts() //AGARRAMOS LOS PRODUCTOS
+        const updatedProducts = products.filter((prod) => prod.id != productId) //FILTRAMOS
+        await productService.deleteProduct(productId) //ELIMINAMOS EL PRODUCTO DE NUESTRO ARCHIVO
+
+        io.emit('productDeleted' , updatedProducts) //ACTUALIZAMOS
+    })
 })

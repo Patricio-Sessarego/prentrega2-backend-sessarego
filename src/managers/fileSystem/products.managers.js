@@ -39,6 +39,18 @@ class ProductsManagerFs{
             console.error(error)
         }
     }
+
+    deleteProduct = async (idToDelete) => {
+        try{
+            const products = await this.getProducts() //AGARRAMOS LOS PRODUCTOS
+            const updatedProducts = products.filter((prod) => prod.id != idToDelete) //FILTRAMOS
+            await fs.promises.writeFile(this.path , JSON.stringify(updatedProducts , null , '\t')) //ESCRIBIMOS EN EL ARCHIVO
+
+            return (updatedProducts) //DEVOLVEMOS LOS NUEVOS PRODUCTOS
+        }catch(error){
+            console.error(error)
+        }
+    }
 }
 
 module.exports = ProductsManagerFs
